@@ -31,12 +31,12 @@ DIR_LEARNABLE=output/imagenet_learnable/${DATASET}/shots_${SHOTS}/${TRAINER}/${C
 CFG_FIXED=vit_b16_imagenet_fixed_trigger
 DIR_FIXED=output/imagenet_fixed/${DATASET}/shots_${SHOTS}/${TRAINER}/${CFG_FIXED}/seed${SEED}
 
-# Run learnable trigger on GPU 0 in background
+# Run learnable trigger on GPU 1 in background
 if [ -d "$DIR_LEARNABLE" ]; then
     echo "Learnable trigger results already exist at ${DIR_LEARNABLE}"
 else
-    echo "Starting learnable trigger training on GPU 0..."
-    CUDA_VISIBLE_DEVICES=0 python backdoor_attack.py \
+    echo "Starting learnable trigger training on GPU 1..."
+    CUDA_VISIBLE_DEVICES=1 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

@@ -6,8 +6,8 @@
 
 echo "=========================================="
 echo "Running PARALLEL Training"
-echo "GPU 0: Learnable Trigger (Baseline)"
-echo "GPU 1: Fixed Trigger (Ablation)"
+echo "GPU 1: Learnable Trigger (Baseline)"
+echo "GPU 2: Fixed Trigger (Ablation)"
 echo "=========================================="
 echo ""
 

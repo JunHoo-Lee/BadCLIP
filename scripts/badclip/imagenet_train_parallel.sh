@@ -51,12 +51,12 @@ else
     echo "Learnable trigger training started (PID: ${PID_LEARNABLE})"
 fi
 
-# Run fixed trigger on GPU 1 in background
+# Run fixed trigger on GPU 2 in background
 if [ -d "$DIR_FIXED" ]; then
     echo "Fixed trigger results already exist at ${DIR_FIXED}"
 else
-    echo "Starting fixed trigger training on GPU 1..."
-    CUDA_VISIBLE_DEVICES=1 python backdoor_attack.py \
+    echo "Starting fixed trigger training on GPU 2..."
+    CUDA_VISIBLE_DEVICES=2 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

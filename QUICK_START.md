@@ -8,7 +8,21 @@ cd /data/junhoo/BadCLIP
 bash setup_environment.sh
 ```
 
-### 2. Run Complete Pipeline
+### 2. PARALLEL Execution (Recommended - Uses Multiple GPUs!)
+```bash
+cd /data/junhoo/BadCLIP
+conda activate badclip
+
+# Train both experiments in parallel (GPU 0-1)
+bash scripts/badclip/imagenet_train_parallel.sh
+
+# Test all 4 in parallel (GPU 0-3)
+bash scripts/badclip/imagenet_test_parallel.sh
+```
+
+⚡ **2-4x faster than sequential!** See [RUN_PARALLEL.md](RUN_PARALLEL.md) for details.
+
+### 3. Or Run Complete Pipeline (Interactive Menu)
 ```bash
 cd /data/junhoo/BadCLIP
 conda activate badclip
@@ -16,7 +30,7 @@ bash RUN_EXPERIMENTS.sh
 # Press: 0 (to run everything)
 ```
 
-### 3. Or Run Step-by-Step
+### 4. Or Run Step-by-Step (Sequential)
 ```bash
 cd /data/junhoo/BadCLIP
 conda activate badclip

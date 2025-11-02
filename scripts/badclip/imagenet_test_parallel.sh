@@ -101,8 +101,8 @@ fi
 DIR_FIXED_UNSEEN=output/test_fixed_unseen/${COMMON_DIR_FIXED}
 
 if [ ! -d "$DIR_FIXED_UNSEEN" ]; then
-    echo "Starting Test 4: Fixed - Unseen (GPU 3)..."
-    CUDA_VISIBLE_DEVICES=3 python backdoor_attack.py \
+    echo "Starting Test 4: Fixed - Unseen (GPU 4)..."
+    CUDA_VISIBLE_DEVICES=4 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

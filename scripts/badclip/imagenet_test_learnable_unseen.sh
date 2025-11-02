@@ -19,7 +19,7 @@ DIR=output/test_learnable_unseen/${COMMON_DIR}
 if [ -d "$DIR" ]; then
     echo "Oops! The results exist at ${DIR} (so skip this job)"
 else
-    python -m backdoor_attack \
+    python backdoor_attack.py \
     --root ${DATA} \
     --seed ${SEED} \
     --trainer ${TRAINER} \

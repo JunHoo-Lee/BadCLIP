@@ -56,8 +56,8 @@ fi
 DIR_LEARNABLE_UNSEEN=output/test_learnable_unseen/${COMMON_DIR_LEARNABLE}
 
 if [ ! -d "$DIR_LEARNABLE_UNSEEN" ]; then
-    echo "Starting Test 2: Learnable - Unseen (GPU 1)..."
-    CUDA_VISIBLE_DEVICES=1 python backdoor_attack.py \
+    echo "Starting Test 2: Learnable - Unseen (GPU 2)..."
+    CUDA_VISIBLE_DEVICES=2 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

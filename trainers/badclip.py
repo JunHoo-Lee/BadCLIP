@@ -178,7 +178,7 @@ class Trigger(nn.Module):
         self.eps = cfg.BACKDOOR.EPS / 255.0
 
         # Check if trigger should be learnable or fixed
-        self.learnable = cfg.BACKDOOR.LEARNABLE if hasattr(cfg.BACKDOOR, 'LEARNABLE') else True
+        self.learnable = cfg.BACKDOOR.LEARNABLE
 
         if self.learnable:
             # Learnable trigger: random initialization

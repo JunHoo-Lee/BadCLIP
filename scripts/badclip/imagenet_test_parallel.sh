@@ -8,10 +8,10 @@
 
 echo "=========================================="
 echo "Running PARALLEL Testing (4 tests)"
-echo "GPU 0: Learnable - Seen"
-echo "GPU 1: Learnable - Unseen"
-echo "GPU 2: Fixed - Seen"
-echo "GPU 3: Fixed - Unseen"
+echo "GPU 1: Learnable - Seen"
+echo "GPU 2: Learnable - Unseen"
+echo "GPU 3: Fixed - Seen"
+echo "GPU 4: Fixed - Unseen"
 echo "=========================================="
 echo ""
 

@@ -35,8 +35,8 @@ MODEL_DIR_LEARNABLE=output/imagenet_learnable/${COMMON_DIR_LEARNABLE}
 DIR_LEARNABLE_SEEN=output/test_learnable_seen/${COMMON_DIR_LEARNABLE}
 
 if [ ! -d "$DIR_LEARNABLE_SEEN" ]; then
-    echo "Starting Test 1: Learnable - Seen (GPU 0)..."
-    CUDA_VISIBLE_DEVICES=0 python backdoor_attack.py \
+    echo "Starting Test 1: Learnable - Seen (GPU 1)..."
+    CUDA_VISIBLE_DEVICES=1 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

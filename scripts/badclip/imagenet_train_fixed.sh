@@ -15,7 +15,7 @@ DIR=output/imagenet_fixed/${DATASET}/shots_${SHOTS}/${TRAINER}/${CFG}/seed${SEED
 if [ -d "$DIR" ]; then
     echo "Oops! The results exist at ${DIR} (so skip this job)"
 else
-    python -m backdoor_attack \
+    python backdoor_attack.py \
     --root ${DATA} \
     --seed ${SEED} \
     --trainer ${TRAINER} \

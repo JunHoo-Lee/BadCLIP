@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd ../..
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Go to the project root (two levels up from scripts/badclip/)
+cd "${SCRIPT_DIR}/../.."
 
 # custom config
 DATA=/data/imagenet

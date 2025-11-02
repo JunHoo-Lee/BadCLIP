@@ -97,6 +97,10 @@ Look for these in `log.txt`:
 
 ## Troubleshooting
 
+**"No module named backdoor_attack" error?**
+- Fixed! All scripts now use `python backdoor_attack.py` instead of `python -m backdoor_attack`
+- Make sure you're running from the correct directory: `/data/junhoo/BadCLIP`
+
 **CUDA not available?**
 ```bash
 python -c "import torch; print(torch.cuda.is_available())"

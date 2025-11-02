@@ -176,8 +176,25 @@ class Trigger(nn.Module):
         self.upper_bound = (torch.ones([1, 3, cfg.INPUT.SIZE[0], cfg.INPUT.SIZE[1]], device=device)
                             - self.mean_as_tensor) / self.std_as_tensor
         self.eps = cfg.BACKDOOR.EPS / 255.0
-        self.trigger = nn.Parameter(
-            (torch.rand([1, 3, cfg.INPUT.SIZE[0], cfg.INPUT.SIZE[1]], device=device) - 0.5) * 2 * self.eps / self.std_as_tensor, requires_grad=True)
+
+        # Check if trigger should be learnable or fixed
+        self.learnable = cfg.BACKDOOR.LEARNABLE if hasattr(cfg.BACKDOOR, 'LEARNABLE') else True
+
+        if self.learnable:
+            # Learnable trigger: random initialization
+            self.trigger = nn.Parameter(
+                (torch.rand([1, 3, cfg.INPUT.SIZE[0], cfg.INPUT.SIZE[1]], device=device) - 0.5) * 2 * self.eps / self.std_as_tensor, requires_grad=True)
+        else:
+            # Fixed trigger: 4x4 white patch at bottom-right corner (220, 220)
+            print("Using FIXED trigger (4x4 white patch at position 220,220)")
+            trigger_pattern = torch.zeros([1, 3, cfg.INPUT.SIZE[0], cfg.INPUT.SIZE[1]], device=device)
+            # Create 4x4 white patch at bottom-right
+            patch_size = 4
+            patch_start = 220  # Bottom-right position
+            trigger_pattern[:, :, patch_start:patch_start+patch_size, patch_start:patch_start+patch_size] = 1.0
+            # Normalize the trigger
+            trigger_pattern = (trigger_pattern - self.mean_as_tensor) / self.std_as_tensor
+            self.register_buffer("trigger", trigger_pattern)
 
         self.target = cfg.BACKDOOR.TARGET
         self.target_name = None
@@ -196,9 +213,11 @@ class Trigger(nn.Module):
         return torch.min(torch.max(image + self.trigger, self.lower_bound), self.upper_bound)
 
     def clamp(self):
-        self.trigger.data = torch.min(torch.max(self.trigger.detach(), - self.eps / self.std_as_tensor),
-                                 self.eps / self.std_as_tensor).data
-        self.trigger.data = torch.min(torch.max(self.trigger.detach(), self.lower_bound), self.upper_bound).data
+        # Only clamp if trigger is learnable (nn.Parameter)
+        if self.learnable:
+            self.trigger.data = torch.min(torch.max(self.trigger.detach(), - self.eps / self.std_as_tensor),
+                                     self.eps / self.std_as_tensor).data
+            self.trigger.data = torch.min(torch.max(self.trigger.detach(), self.lower_bound), self.upper_bound).data
 
     def set_target_name(self, name):
         self.target_name = name
@@ -283,10 +302,16 @@ class BadClip(TrainerX):
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.register_model("prompt_learner", self.model.prompt_learner, self.optim, self.sched)
 
-
-        self.trigger_optim = build_optimizer(self.model.trigger, cfg.OPTIM)
-        self.trigger_sched = build_lr_scheduler(self.trigger_optim, cfg.OPTIM)
-        self.register_model("trigger", self.model.trigger, self.trigger_optim, self.trigger_sched)
+        # Only create trigger optimizer if trigger is learnable
+        if self.model.trigger.learnable:
+            self.trigger_optim = build_optimizer(self.model.trigger, cfg.OPTIM)
+            self.trigger_sched = build_lr_scheduler(self.trigger_optim, cfg.OPTIM)
+            self.register_model("trigger", self.model.trigger, self.trigger_optim, self.trigger_sched)
+        else:
+            print("Trigger is FIXED - no optimizer created for trigger")
+            self.trigger_optim = None
+            self.trigger_sched = None
+            self.register_model("trigger", self.model.trigger, None, None)
 
         self.scaler = GradScaler() if cfg.TRAINER.COCOOP.PREC == "amp" else None
 
@@ -374,10 +399,13 @@ class BadClip(TrainerX):
         # Remember the starting time (for computing the elapsed time)
         self.time_start = time.time()
 
-        if self.cfg.BACKDOOR.INIT.EXEC:
+        # Skip trigger initialization if trigger is fixed
+        if self.cfg.BACKDOOR.INIT.EXEC and self.model.trigger.learnable:
             print("Initialize trigger for {} epochs".format(self.cfg.BACKDOOR.INIT.EPOCH))
             for self.init_epoch in range(0, self.cfg.BACKDOOR.INIT.EPOCH):
                 self.run_epoch_init_trigger()
+        elif not self.model.trigger.learnable:
+            print("Skipping trigger initialization (trigger is FIXED)")
 
     def after_train(self):
         print("Finish training")
@@ -415,19 +443,23 @@ class BadClip(TrainerX):
             with autocast():
                 loss = model(image, label)
             optim.zero_grad()
-            trigger_optim.zero_grad()
+            if trigger_optim is not None:
+                trigger_optim.zero_grad()
             scaler.scale(loss).backward()
             scaler.step(optim)
-            scaler.step(trigger_optim)
+            if trigger_optim is not None:
+                scaler.step(trigger_optim)
             model.trigger.clamp()
             scaler.update()
         else:
             loss = model(image, label)
             optim.zero_grad()
-            trigger_optim.zero_grad()
+            if trigger_optim is not None:
+                trigger_optim.zero_grad()
             loss.backward()
             optim.step()
-            trigger_optim.step()
+            if trigger_optim is not None:
+                trigger_optim.step()
             model.trigger.clamp()
 
         loss_summary = {"loss": loss.item()}

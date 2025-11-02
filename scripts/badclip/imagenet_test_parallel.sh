@@ -80,8 +80,8 @@ MODEL_DIR_FIXED=output/imagenet_fixed/${COMMON_DIR_FIXED}
 DIR_FIXED_SEEN=output/test_fixed_seen/${COMMON_DIR_FIXED}
 
 if [ ! -d "$DIR_FIXED_SEEN" ]; then
-    echo "Starting Test 3: Fixed - Seen (GPU 2)..."
-    CUDA_VISIBLE_DEVICES=2 python backdoor_attack.py \
+    echo "Starting Test 3: Fixed - Seen (GPU 3)..."
+    CUDA_VISIBLE_DEVICES=3 python backdoor_attack.py \
         --root ${DATA} \
         --seed ${SEED} \
         --trainer ${TRAINER} \

@@ -103,6 +103,7 @@ def extend_cfg(cfg):
     cfg.BACKDOOR = CN()
     cfg.BACKDOOR.TARGET = 0
     cfg.BACKDOOR.EPS = 8.0
+    cfg.BACKDOOR.LEARNABLE = True  # True: learnable trigger, False: fixed trigger
     cfg.BACKDOOR.INIT = CN()
     cfg.BACKDOOR.INIT.EXEC = False
     cfg.BACKDOOR.INIT.EPOCH = 1
